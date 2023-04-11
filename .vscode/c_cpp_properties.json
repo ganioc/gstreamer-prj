@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Macos",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/Library/Frameworks/GStreamer.framework/Headers"
+            ],
+            "defines": [],
+            "macFrameworkPath": [],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "gnu11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        }
+    ],
+    "version": 4
+}
