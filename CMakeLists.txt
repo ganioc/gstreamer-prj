@@ -74,6 +74,20 @@ target_include_directories(
 )
 target_link_libraries(${PRJ2}  
     ${GST_LIBRARIES})
+
+    # tutorial 2, 
+set(PRJ3 "tutorialthree")
+add_executable(${PRJ3}  
+    ${PROJECT_SOURCE_DIR}/src/basic3.c)
+
+target_include_directories(
+    ${PRJ3} PRIVATE 
+    ${GST_INCLUDE_DIRS}
+)
+target_link_libraries(${PRJ3}  
+    ${GST_LIBRARIES})
+
+
 ########################################################
 
 if(CMAKE_SYSTEM STREQUAL "Linux")
