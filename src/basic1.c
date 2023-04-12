@@ -13,8 +13,12 @@ int tutorial_main(int argc, char *argv[], void *args){
     gst_init(&argc, &argv);
 
     // build the pipeline
+    // pipeline = gst_parse_launch(
+    //     "playbin url=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm",
+    //     NULL
+    // );
     pipeline = gst_parse_launch(
-        "playbin url=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm",
+        "playbin uri=udp://127.0.0.1:9988",
         NULL
     );
 
