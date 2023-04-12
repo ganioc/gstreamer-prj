@@ -1,28 +1,46 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-project(RTPGS LANGUAGES C)
+project(rtpgs LANGUAGES C)
 
 # include_directories()
 # ${CMAKE_PROJECT_NAME}
 
-message(STATUS ${CMAKE_PROJECT_N})
+message(STATUS ${CMAKE_PROJECT_NAME})
+message(STATUS ${PROJECT_BINARY_DIR})
+message(STATUS ${PROJECT_SOURCE_DIR})
 
 find_package(PkgConfig REQUIRED)
+if ( NOT (PKGCONFIG_FOUND))
+      message(FATAL_ERROR "Please Install PPkgConfig: CMake will Exit")
+endif()
 
 pkg_check_modules(GST REQUIRED gstreamer-1.0)
+if ( NOT (GST_FOUND))
+      message(FATAL_ERROR "Please Install GStreamer: CMake will Exit")
+endif()
+set(ENV{PKG_CONFIG_PATH})
+
+include_directories("${GST_INCLUDE_DIRS}")
+link_libraries(${GST_LIBRARIES})
+
+# find_package(GStreamer REQUIRED)
 
 message(STATUS "include => ${GST_INCLUDE_DIRS}")
 message(STATUS "lib => ${GST_LIBRARIES}")
 
-add_executable(rtpgs
+add_executable(${CMAKE_PROJECT_NAME}
     basic.c
 )
 
-target_include_directories(rtpgs PRIVATE 
+include_directories("${PROJECT_SOURCE_DIR}")
+
+message(STATUS ${GST_INCLUDE_DIRS})
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE 
     ${GST_INCLUDE_DIRS}
 )
 
-target_link_libraries(rtpgs PRIVATE 
+message(STATUS ${GST_LIBRARIES})
+target_link_libraries(${CMAKE_PROJECT_NAME}  
     ${GST_LIBRARIES})
 
 if(CMAKE_SYSTEM STREQUAL "Linux")
