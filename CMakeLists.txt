@@ -35,8 +35,11 @@ link_directories(${GST_LIBRARY_DIRS})
 add_executable(${CMAKE_PROJECT_NAME}
     basic.c
 )
-
-include_directories("${PROJECT_SOURCE_DIR}")
+message(STATUS "${PROJECT_SOURCE_DIR}")
+#  only help in finding header files
+include_directories("${PROJECT_SOURCE_DIR}"
+    "${PROJECT_SOURCE_DIR}/src"
+    )
 
 message(STATUS ${GST_INCLUDE_DIRS})
 target_include_directories(
@@ -48,6 +51,17 @@ message(STATUS ${GST_LIBRARIES})
 target_link_libraries(${CMAKE_PROJECT_NAME}  
     ${GST_LIBRARIES})
 
+# tutorial 1, basic play a webm,
+set(PRJ1 "tutorialone")
+add_executable(${PRJ1}  
+    ${PROJECT_SOURCE_DIR}/src/basic1.c)
+    
+target_include_directories(
+    ${PRJ1} PRIVATE 
+    ${GST_INCLUDE_DIRS}
+)
+target_link_libraries(${PRJ1}  
+    ${GST_LIBRARIES})
 ########################################################
 
 if(CMAKE_SYSTEM STREQUAL "Linux")
