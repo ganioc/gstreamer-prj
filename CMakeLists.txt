@@ -55,12 +55,24 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 set(PRJ1 "tutorialone")
 add_executable(${PRJ1}  
     ${PROJECT_SOURCE_DIR}/src/basic1.c)
-    
+
 target_include_directories(
     ${PRJ1} PRIVATE 
     ${GST_INCLUDE_DIRS}
 )
 target_link_libraries(${PRJ1}  
+    ${GST_LIBRARIES})
+
+# tutorial 2, 
+set(PRJ2 "tutorialtwo")
+add_executable(${PRJ2}  
+    ${PROJECT_SOURCE_DIR}/src/basic2.c)
+
+target_include_directories(
+    ${PRJ2} PRIVATE 
+    ${GST_INCLUDE_DIRS}
+)
+target_link_libraries(${PRJ2}  
     ${GST_LIBRARIES})
 ########################################################
 
