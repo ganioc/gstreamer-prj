@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(RTPGS LANGUAGES C)
 
+# include_directories()
+# ${CMAKE_PROJECT_NAME}
+
+message(STATUS ${CMAKE_PROJECT_N})
+
 find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(GST REQUIRED gstreamer-1.0)
