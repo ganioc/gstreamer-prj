@@ -13,14 +13,14 @@ int tutorial_main(int argc, char *argv[], void *args){
     gst_init(&argc, &argv);
 
     // build the pipeline
-    // pipeline = gst_parse_launch(
-    //     "playbin url=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm",
-    //     NULL
-    // );
     pipeline = gst_parse_launch(
-        "playbin uri=udp://127.0.0.1:9988",
-        NULL
+        "playbin url=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm",
+         NULL
     );
+    /* pipeline = gst_parse_launch( */
+    /*     "playbin uri=udp://127.0.0.1:9988", */
+    /*     NULL */
+    /* ); */
 
     // start playing
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
@@ -50,6 +50,6 @@ int main(int argc, char*argv[]){
 #if defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE
     return gst_macos_main(tutorial_main, argc, argv, NULL);
 #else
-    return tutorial_main(argc, argv);
+    return tutorial_main(argc, argv, NULL);
 #endif
 }
