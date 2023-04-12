@@ -20,12 +20,12 @@ checkdirs: $(BUILD_DIR)
 $(BUILD_DIR):
 	mkdir -p $@
 
-output/main: main.o 
+$(BUILD_DIR)/main: output/main.o 
 	$(CC) $(filter %.o,$^) -o $@ $(LIBS) $(LDFLAGS)
 
-%.o: %.c 
-	$(CC) $(CFLAGS) $(INCLUDES) $(CPPFLAGS) -c $< 
+$(BUILD_DIR)/%.o: %.c 
+	$(CC) $(CFLAGS) $(INCLUDES) $(CPPFLAGS) -c $< -o $@
 
 clean:
-	rm -f *.o 
-	rm -f output/main 
+	rm -f *.o $(BUILD_DIR)/*.o
+	rm -f $(BUILD_DIR)/main 
