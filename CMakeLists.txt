@@ -51,45 +51,15 @@ message(STATUS ${GST_LIBRARIES})
 target_link_libraries(${CMAKE_PROJECT_NAME}  
     ${GST_LIBRARIES})
 
-# tutorial 1, basic play a webm,
-set(PRJ1 "tutorialone")
-add_executable(${PRJ1}  
-    ${PROJECT_SOURCE_DIR}/src/basic1.c)
-
-target_include_directories(
-    ${PRJ1} PRIVATE 
-    ${GST_INCLUDE_DIRS}
-)
-target_link_libraries(${PRJ1}  
-    ${GST_LIBRARIES})
-
-# tutorial 2, 
-set(PRJ2 "tutorialtwo")
-add_executable(${PRJ2}  
-    ${PROJECT_SOURCE_DIR}/src/basic2.c)
-
-target_include_directories(
-    ${PRJ2} PRIVATE 
-    ${GST_INCLUDE_DIRS}
-)
-target_link_libraries(${PRJ2}  
-    ${GST_LIBRARIES})
-
-# tutorial 3, 
-set(PRJ3 "tutorialthree")
-add_executable(${PRJ3}  
-    ${PROJECT_SOURCE_DIR}/src/basic3.c)
-
-target_include_directories(
-    ${PRJ3} PRIVATE 
-    ${GST_INCLUDE_DIRS}
-)
-target_link_libraries(${PRJ3}  
-    ${GST_LIBRARIES})
-
-# tutorial 4
-list(APPEND srcs src/time4.c)
-list(APPEND prjs time4)
+# tutorials
+list(APPEND srcs src/time4.c 
+            src/basic3.c
+            src/basic2.c
+            src/basic1.c)
+list(APPEND prjs time4
+            tutorialthree
+            tutorialtwo
+            tutorialone)
 foreach(file prj IN ZIP_LISTS srcs prjs)
     message(STATUS ${prj} ${file})
     add_executable(${prj}
