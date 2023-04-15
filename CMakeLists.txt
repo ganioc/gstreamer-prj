@@ -75,7 +75,7 @@ target_include_directories(
 target_link_libraries(${PRJ2}  
     ${GST_LIBRARIES})
 
-    # tutorial 2, 
+# tutorial 3, 
 set(PRJ3 "tutorialthree")
 add_executable(${PRJ3}  
     ${PROJECT_SOURCE_DIR}/src/basic3.c)
@@ -86,6 +86,25 @@ target_include_directories(
 )
 target_link_libraries(${PRJ3}  
     ${GST_LIBRARIES})
+
+# tutorial 4
+list(APPEND srcs src/time4.c)
+list(APPEND prjs time4)
+foreach(file prj IN ZIP_LISTS srcs prjs)
+    message(STATUS ${prj} ${file})
+    add_executable(${prj}
+        ${PROJECT_SOURCE_DIR}/${file}
+    )
+    target_include_directories(
+        ${prj}
+        PRIVATE
+        ${GST_INCLUDE_DIRS}
+    )
+    target_link_libraries(
+        ${prj}
+        ${GST_LIBRARIES}
+    )
+endforeach()
 
 
 ########################################################
