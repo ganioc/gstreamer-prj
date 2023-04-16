@@ -26,27 +26,27 @@ if (NOT (GTK_FOUND))
     message(FATAL_ERROR "Please install GTK 3.0: CMake will Exit")
 endif()
 
-# pkg_check_modules(GST_VIDEO REQUIRED gstreamer-video-1.0)
-# if (NOT (GST_VIDEO_FOUND))
-#     message(FATAL_ERROR "Please install gst-video: CMake will Exit")
-# endif()
+pkg_check_modules(GSTVIDEO REQUIRED gstreamer-video-1.0)
+if (NOT (GSTVIDEO_FOUND))
+    message(FATAL_ERROR "Please install gst-video: CMake will Exit")
+endif()
 
 message(STATUS "include => ${GST_INCLUDE_DIRS}")
 message(STATUS "include => ${GTK_INCLUDE_DIRS}")
-# message(STATUS "include => ${GST_VIDEO_INCLUDE_DIRS}")
+message(STATUS "include => ${GSTVIDEO_INCLUDE_DIRS}")
 message(STATUS "lib => ${GST_LIBRARY_DIRS}")
 message(STATUS "lib => ${GTK_LIBRARY_DIRS}")
-# message(STATUS "lib => ${GST_VIDEO_LIBRARY_DIRS}")
+message(STATUS "lib => ${GSTVIDEO_LIBRARY_DIRS}")
 
 include_directories(
     ${GST_INCLUDE_DIRS} 
     ${GTK_INCLUDE_DIRS}
-    # ${GST_VIDEO_INCLUDE_DIRS}
+    ${GSTVIDEO_INCLUDE_DIRS}
     )
 link_directories(
     ${GST_LIBRARY_DIRS} 
     ${GTK_LIBRARY_DIRS}
-    # ${GST_VIDEO_LIBRARY_DIRS}
+    ${GSTVIDEO_LIBRARY_DIRS}
     )
 
 # find_package(GStreamer REQUIRED)
@@ -93,13 +93,13 @@ foreach(file prj IN ZIP_LISTS srcs prjs)
         PRIVATE
         ${GST_INCLUDE_DIRS}
         ${GTK_INCLUDE_DIRS}
-        # ${GST_VIDEO_INCLUDE_DIRS}
+        ${GSTVIDEO_INCLUDE_DIRS}
     )
     target_link_libraries(
         ${prj}
         ${GST_LIBRARIES}
         ${GTK_LIBRARIES}
-        # ${GST_VIDEO_LIBRARY_DIRS}
+        ${GSTVIDEO_LIBRARIES}
     )
 endforeach()
 
