@@ -77,12 +77,16 @@ list(APPEND srcs src/time4.c
             src/basic3.c
             src/basic2.c
             src/basic1.c
-            src/gui5.c)
+            src/gui5.c
+            src/padcap6.c
+            )
 list(APPEND prjs time4
             tutorialthree
             tutorialtwo
             tutorialone
-            gui5)
+            gui5
+            padcap6
+            )
 foreach(file prj IN ZIP_LISTS srcs prjs)
     message(STATUS ${prj} " - " ${file})
     add_executable(${prj}
