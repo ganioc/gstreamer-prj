@@ -36,26 +36,37 @@ if (NOT (GSTAUDIO_FOUND))
     message(FATAL_ERROR "Please install gst-audio: CMake will Exit")
 endif()
 
+pkg_check_modules(GSTDIS REQUIRED gstreamer-pbutils-1.0)
+if (NOT (GSTDIS_FOUND))
+    message(FATAL_ERROR "Please install gst-pbutils: CMake will Exit")
+endif()
+
+
 message(STATUS "include => ${GST_INCLUDE_DIRS}")
 message(STATUS "include => ${GTK_INCLUDE_DIRS}")
 message(STATUS "include => ${GSTVIDEO_INCLUDE_DIRS}")
 message(STATUS "include => ${GSTAUDIO_INCLUDE_DIRS}")
+message(STATUS "include => ${GSTDIS_INCLUDE_DIRS}")
+
 message(STATUS "lib => ${GST_LIBRARY_DIRS}")
 message(STATUS "lib => ${GTK_LIBRARY_DIRS}")
 message(STATUS "lib => ${GSTVIDEO_LIBRARY_DIRS}")
 message(STATUS "lib => ${GSTAUDIO_LIBRARY_DIRS}")
+message(STATUS "lib => ${GSTDIS_LIBRARY_DIRS}")
 
 include_directories(
     ${GST_INCLUDE_DIRS} 
     ${GTK_INCLUDE_DIRS}
     ${GSTVIDEO_INCLUDE_DIRS}
     ${GSTAUDIO_INCLUDE_DIRS}
+    ${GSTDIS_INCLUDE_DIRS}
     )
 link_directories(
     ${GST_LIBRARY_DIRS} 
     ${GTK_LIBRARY_DIRS}
     ${GSTVIDEO_LIBRARY_DIRS}
     ${GSTAUDIO_LIBRARY_DIRS}
+    ${GSTDIS_LIBRARY_DIRS}
     )
 
 # find_package(GStreamer REQUIRED)
@@ -90,6 +101,7 @@ list(APPEND srcs src/time4.c
             src/padcap6.c
             src/thread7.c
             src/shortcutting8.c
+            src/info9.c
             )
 list(APPEND prjs time4
             tutorialthree
@@ -99,6 +111,7 @@ list(APPEND prjs time4
             padcap6
             thread7
             shortcutting8
+            info9
             )
 foreach(file prj IN ZIP_LISTS srcs prjs)
     message(STATUS ${prj} " - " ${file})
@@ -112,6 +125,7 @@ foreach(file prj IN ZIP_LISTS srcs prjs)
         ${GTK_INCLUDE_DIRS}
         ${GSTVIDEO_INCLUDE_DIRS}
         ${GSTAUDIO_INCLUDE_DIRS}
+        ${GSTDIS_INCLUDE_DIRS}
     )
     target_link_libraries(
         ${prj}
@@ -119,6 +133,7 @@ foreach(file prj IN ZIP_LISTS srcs prjs)
         ${GTK_LIBRARIES}
         ${GSTVIDEO_LIBRARIES}
         ${GSTAUDIO_LIBRARIES}
+        ${GSTDIS_LIBRARIES}
     )
 endforeach()
 

@@ -29,3 +29,7 @@ GstQuery,
 sudo apt install libgtk-3-dev
 ```
 
+#### tutorial 8 
+appsrc, appsink, 
+
+
