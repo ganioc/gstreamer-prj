@@ -31,22 +31,31 @@ if (NOT (GSTVIDEO_FOUND))
     message(FATAL_ERROR "Please install gst-video: CMake will Exit")
 endif()
 
+pkg_check_modules(GSTAUDIO REQUIRED gstreamer-audio-1.0)
+if (NOT (GSTAUDIO_FOUND))
+    message(FATAL_ERROR "Please install gst-audio: CMake will Exit")
+endif()
+
 message(STATUS "include => ${GST_INCLUDE_DIRS}")
 message(STATUS "include => ${GTK_INCLUDE_DIRS}")
 message(STATUS "include => ${GSTVIDEO_INCLUDE_DIRS}")
+message(STATUS "include => ${GSTAUDIO_INCLUDE_DIRS}")
 message(STATUS "lib => ${GST_LIBRARY_DIRS}")
 message(STATUS "lib => ${GTK_LIBRARY_DIRS}")
 message(STATUS "lib => ${GSTVIDEO_LIBRARY_DIRS}")
+message(STATUS "lib => ${GSTAUDIO_LIBRARY_DIRS}")
 
 include_directories(
     ${GST_INCLUDE_DIRS} 
     ${GTK_INCLUDE_DIRS}
     ${GSTVIDEO_INCLUDE_DIRS}
+    ${GSTAUDIO_INCLUDE_DIRS}
     )
 link_directories(
     ${GST_LIBRARY_DIRS} 
     ${GTK_LIBRARY_DIRS}
     ${GSTVIDEO_LIBRARY_DIRS}
+    ${GSTAUDIO_LIBRARY_DIRS}
     )
 
 # find_package(GStreamer REQUIRED)
@@ -80,6 +89,7 @@ list(APPEND srcs src/time4.c
             src/gui5.c
             src/padcap6.c
             src/thread7.c
+            src/shortcutting8.c
             )
 list(APPEND prjs time4
             tutorialthree
@@ -88,6 +98,7 @@ list(APPEND prjs time4
             gui5
             padcap6
             thread7
+            shortcutting8
             )
 foreach(file prj IN ZIP_LISTS srcs prjs)
     message(STATUS ${prj} " - " ${file})
@@ -100,12 +111,14 @@ foreach(file prj IN ZIP_LISTS srcs prjs)
         ${GST_INCLUDE_DIRS}
         ${GTK_INCLUDE_DIRS}
         ${GSTVIDEO_INCLUDE_DIRS}
+        ${GSTAUDIO_INCLUDE_DIRS}
     )
     target_link_libraries(
         ${prj}
         ${GST_LIBRARIES}
         ${GTK_LIBRARIES}
         ${GSTVIDEO_LIBRARIES}
+        ${GSTAUDIO_LIBRARIES}
     )
 endforeach()
 
