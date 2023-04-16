@@ -114,8 +114,6 @@ int main(int argc, char *argv[]){
     gst_element_set_state(data.playbin, GST_STATE_NULL);
     gst_object_unref(data.playbin);
     
-
-
     return 0;
 }
 

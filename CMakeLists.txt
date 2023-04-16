@@ -21,12 +21,33 @@ if ( NOT (GST_FOUND))
 endif()
 set(ENV{PKG_CONFIG_PATH})
 
+pkg_check_modules(GTK REQUIRED gtk+-3.0)
+if (NOT (GTK_FOUND))
+    message(FATAL_ERROR "Please install GTK 3.0: CMake will Exit")
+endif()
+
+# pkg_check_modules(GST_VIDEO REQUIRED gstreamer-video-1.0)
+# if (NOT (GST_VIDEO_FOUND))
+#     message(FATAL_ERROR "Please install gst-video: CMake will Exit")
+# endif()
 
 message(STATUS "include => ${GST_INCLUDE_DIRS}")
+message(STATUS "include => ${GTK_INCLUDE_DIRS}")
+# message(STATUS "include => ${GST_VIDEO_INCLUDE_DIRS}")
 message(STATUS "lib => ${GST_LIBRARY_DIRS}")
+message(STATUS "lib => ${GTK_LIBRARY_DIRS}")
+# message(STATUS "lib => ${GST_VIDEO_LIBRARY_DIRS}")
 
-include_directories(${GST_INCLUDE_DIRS})
-link_directories(${GST_LIBRARY_DIRS})
+include_directories(
+    ${GST_INCLUDE_DIRS} 
+    ${GTK_INCLUDE_DIRS}
+    # ${GST_VIDEO_INCLUDE_DIRS}
+    )
+link_directories(
+    ${GST_LIBRARY_DIRS} 
+    ${GTK_LIBRARY_DIRS}
+    # ${GST_VIDEO_LIBRARY_DIRS}
+    )
 
 # find_package(GStreamer REQUIRED)
 
@@ -55,13 +76,15 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 list(APPEND srcs src/time4.c 
             src/basic3.c
             src/basic2.c
-            src/basic1.c)
+            src/basic1.c
+            src/gui5.c)
 list(APPEND prjs time4
             tutorialthree
             tutorialtwo
-            tutorialone)
+            tutorialone
+            gui5)
 foreach(file prj IN ZIP_LISTS srcs prjs)
-    message(STATUS ${prj} ${file})
+    message(STATUS ${prj} " - " ${file})
     add_executable(${prj}
         ${PROJECT_SOURCE_DIR}/${file}
     )
@@ -69,10 +92,14 @@ foreach(file prj IN ZIP_LISTS srcs prjs)
         ${prj}
         PRIVATE
         ${GST_INCLUDE_DIRS}
+        ${GTK_INCLUDE_DIRS}
+        # ${GST_VIDEO_INCLUDE_DIRS}
     )
     target_link_libraries(
         ${prj}
         ${GST_LIBRARIES}
+        ${GTK_LIBRARIES}
+        # ${GST_VIDEO_LIBRARY_DIRS}
     )
 endforeach()
 
