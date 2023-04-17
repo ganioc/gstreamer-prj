@@ -15,6 +15,9 @@ clang basic1.c -o basic1 `pkg-config --cflags --libs gstreamer-1.0`
 
 ```
 
+#### install gtk+-3.0
+
+
 
 ### linux
 #### tutorial 4 time management

@@ -21,7 +21,7 @@ if ( NOT (GST_FOUND))
 endif()
 set(ENV{PKG_CONFIG_PATH})
 
-pkg_check_modules(GTK REQUIRED gtk+-3.0)
+pkg_check_modules(GTK REQUIRED "gtk+-3.0")
 if (NOT (GTK_FOUND))
     message(FATAL_ERROR "Please install GTK 3.0: CMake will Exit")
 endif()
