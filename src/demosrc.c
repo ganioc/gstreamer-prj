@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <gst/gst.h>
+#include <glib.h>
+
+// structure to contain all our information ,so we can pass it around
+typedef struct _CustomData
+{
+    // GstDiscoverer *discoverer;
+    GMainLoop   *loop;
+    GstElement  *pipeline;
+    GstBus      *bus;
+    guint        bus_watch_id;
+} CustomData;
+
+guint thread_main_shutdown = 0;
+
+// separate thread
+gpointer thread_main(gpointer data){
+    printf("thread main started\n");
+
+    while (thread_main_shutdown == 0)
+    {
+        /* code */
+        g_usleep(3000000);
+        printf("running\n");
+    }
+    
+    printf("thread_main exited\n");
+    g_thread_exit(NULL);
+}
+
+static gboolean bus_callback(
+    GstBus *bus,
+    GstMessage *message,
+    gpointer data)
+{
+    g_print("Got %s message\n", GST_MESSAGE_TYPE_NAME(message));
+    switch(GST_MESSAGE_TYPE(message)){
+        default:
+        g_print("unhandled message\n");
+        break;
+    }
+
+    return TRUE;
+}
+
+int main(int argc, char *argv[]){
+    GThread *threads;
+    CustomData data;
+
+    printf("Demo of appsr\n");
+
+    memset(&data, 0, sizeof(data));
+
+    // if(g_thread_supported() == FALSE){
+    //     g_thread_init(NULL);
+    // }
+
+    threads = g_thread_new("thread_main",
+        thread_main,
+        NULL);
+    if(threads == NULL){
+        printf("Cannot create thread main\n");
+        exit(-1);
+    }
+
+    // Init Gstreamer
+    gst_init(&argc, &argv);
+
+    // create pipeline, 
+    data.pipeline = gst_pipeline_new("my_pipeline");
+    // add a watch for new message on pipeline's message bus
+    // the default GLib main context, 
+    data.bus = gst_pipeline_get_bus(GST_PIPELINE(data.pipeline));
+    data.bus_watch_id = gst_bus_add_watch(data.bus,
+        bus_callback,
+        NULL);
+    gst_object_unref(data.bus);
+
+    // create a mainloop  runs/iterates the default GLib 
+    // main context, 
+    // when a message has been posted on the bus, default 
+    // main context will automatically call bux_callback()
+    data.loop = g_main_loop_new(NULL, FALSE);
+    g_main_loop_run(data.loop);
+
+    // exit from g_main_loop
+    thread_main_shutdown = 1;
+    g_thread_join(threads);
+    printf("Thread main cleaned up\n");
+
+    // Free resources
+    // g_object_unref(data)
+    gst_element_set_state(data.pipeline, GST_STATE_NULL);
+    gst_object_unref(data.pipeline);
+    g_source_remove(data.bus_watch_id);
+
+    g_main_loop_unref(data.loop);
+
+    return 0;
+
+}
