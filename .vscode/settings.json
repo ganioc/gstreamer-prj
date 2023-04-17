@@ -1,6 +1,7 @@
 {
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
-        "gst.h": "c"
+        "gst.h": "c",
+        "signal.h": "c"
     }
 }
