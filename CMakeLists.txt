@@ -21,12 +21,53 @@ if ( NOT (GST_FOUND))
 endif()
 set(ENV{PKG_CONFIG_PATH})
 
+pkg_check_modules(GTK REQUIRED gtk+-3.0)
+if (NOT (GTK_FOUND))
+    message(FATAL_ERROR "Please install GTK 3.0: CMake will Exit")
+endif()
+
+pkg_check_modules(GSTVIDEO REQUIRED gstreamer-video-1.0)
+if (NOT (GSTVIDEO_FOUND))
+    message(FATAL_ERROR "Please install gst-video: CMake will Exit")
+endif()
+
+pkg_check_modules(GSTAUDIO REQUIRED gstreamer-audio-1.0)
+if (NOT (GSTAUDIO_FOUND))
+    message(FATAL_ERROR "Please install gst-audio: CMake will Exit")
+endif()
+
+pkg_check_modules(GSTDIS REQUIRED gstreamer-pbutils-1.0)
+if (NOT (GSTDIS_FOUND))
+    message(FATAL_ERROR "Please install gst-pbutils: CMake will Exit")
+endif()
+
 
 message(STATUS "include => ${GST_INCLUDE_DIRS}")
-message(STATUS "lib => ${GST_LIBRARY_DIRS}")
+message(STATUS "include => ${GTK_INCLUDE_DIRS}")
+message(STATUS "include => ${GSTVIDEO_INCLUDE_DIRS}")
+message(STATUS "include => ${GSTAUDIO_INCLUDE_DIRS}")
+message(STATUS "include => ${GSTDIS_INCLUDE_DIRS}")
 
-include_directories(${GST_INCLUDE_DIRS})
-link_directories(${GST_LIBRARY_DIRS})
+message(STATUS "lib => ${GST_LIBRARY_DIRS}")
+message(STATUS "lib => ${GTK_LIBRARY_DIRS}")
+message(STATUS "lib => ${GSTVIDEO_LIBRARY_DIRS}")
+message(STATUS "lib => ${GSTAUDIO_LIBRARY_DIRS}")
+message(STATUS "lib => ${GSTDIS_LIBRARY_DIRS}")
+
+include_directories(
+    ${GST_INCLUDE_DIRS} 
+    ${GTK_INCLUDE_DIRS}
+    ${GSTVIDEO_INCLUDE_DIRS}
+    ${GSTAUDIO_INCLUDE_DIRS}
+    ${GSTDIS_INCLUDE_DIRS}
+    )
+link_directories(
+    ${GST_LIBRARY_DIRS} 
+    ${GTK_LIBRARY_DIRS}
+    ${GSTVIDEO_LIBRARY_DIRS}
+    ${GSTAUDIO_LIBRARY_DIRS}
+    ${GSTDIS_LIBRARY_DIRS}
+    )
 
 # find_package(GStreamer REQUIRED)
 
@@ -51,41 +92,50 @@ message(STATUS ${GST_LIBRARIES})
 target_link_libraries(${CMAKE_PROJECT_NAME}  
     ${GST_LIBRARIES})
 
-# tutorial 1, basic play a webm,
-set(PRJ1 "tutorialone")
-add_executable(${PRJ1}  
-    ${PROJECT_SOURCE_DIR}/src/basic1.c)
-
-target_include_directories(
-    ${PRJ1} PRIVATE 
-    ${GST_INCLUDE_DIRS}
-)
-target_link_libraries(${PRJ1}  
-    ${GST_LIBRARIES})
-
-# tutorial 2, 
-set(PRJ2 "tutorialtwo")
-add_executable(${PRJ2}  
-    ${PROJECT_SOURCE_DIR}/src/basic2.c)
-
-target_include_directories(
-    ${PRJ2} PRIVATE 
-    ${GST_INCLUDE_DIRS}
-)
-target_link_libraries(${PRJ2}  
-    ${GST_LIBRARIES})
-
-    # tutorial 2, 
-set(PRJ3 "tutorialthree")
-add_executable(${PRJ3}  
-    ${PROJECT_SOURCE_DIR}/src/basic3.c)
-
-target_include_directories(
-    ${PRJ3} PRIVATE 
-    ${GST_INCLUDE_DIRS}
-)
-target_link_libraries(${PRJ3}  
-    ${GST_LIBRARIES})
+# tutorials
+list(APPEND srcs src/time4.c 
+            src/basic3.c
+            src/basic2.c
+            src/basic1.c
+            src/gui5.c
+            src/padcap6.c
+            src/thread7.c
+            src/shortcutting8.c
+            src/info9.c
+            )
+list(APPEND prjs time4
+            tutorialthree
+            tutorialtwo
+            tutorialone
+            gui5
+            padcap6
+            thread7
+            shortcutting8
+            info9
+            )
+foreach(file prj IN ZIP_LISTS srcs prjs)
+    message(STATUS ${prj} " - " ${file})
+    add_executable(${prj}
+        ${PROJECT_SOURCE_DIR}/${file}
+    )
+    target_include_directories(
+        ${prj}
+        PRIVATE
+        ${GST_INCLUDE_DIRS}
+        ${GTK_INCLUDE_DIRS}
+        ${GSTVIDEO_INCLUDE_DIRS}
+        ${GSTAUDIO_INCLUDE_DIRS}
+        ${GSTDIS_INCLUDE_DIRS}
+    )
+    target_link_libraries(
+        ${prj}
+        ${GST_LIBRARIES}
+        ${GTK_LIBRARIES}
+        ${GSTVIDEO_LIBRARIES}
+        ${GSTAUDIO_LIBRARIES}
+        ${GSTDIS_LIBRARIES}
+    )
+endforeach()
 
 
 ########################################################
