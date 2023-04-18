@@ -102,6 +102,7 @@ list(APPEND srcs src/time4.c
             src/thread7.c
             src/shortcutting8.c
             src/info9.c
+            src/demosrc.c
             )
 list(APPEND prjs time4
             tutorialthree
@@ -112,6 +113,7 @@ list(APPEND prjs time4
             thread7
             shortcutting8
             info9
+            demosrc
             )
 foreach(file prj IN ZIP_LISTS srcs prjs)
     message(STATUS ${prj} " - " ${file})
