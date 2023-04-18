@@ -33,7 +33,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include <gst/gst.h>
@@ -87,7 +87,7 @@ static void gst_plugin_template_get_property (GObject * object,
 static GstFlowReturn gst_plugin_template_transform_ip (GstBaseTransform *
     base, GstBuffer * outbuf);
 
-/* GObject vmethod implementations */
+/* GObject vmethod implementations */ 
 
 /* initialize the plugin's class */
 static void
