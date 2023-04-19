@@ -81,6 +81,14 @@ enum
 };
 
 static gboolean JustCaughtDelimiter = FALSE;
+// 086f3693-b7b3-4f2c-9653-21492feee5b8
+static guint8 uuid[MYFILTER_SEI_UUID_SIZE] = {
+  0x08, 0x6f, 0x36, 0x93,
+  0xb7, 0xb3,
+  0x4f, 0x2c,
+  0x96, 0x53,
+  0x21, 0x49, 0x2f, 0xee, 0xe5, 0xb8
+};
 
 /* the capabilities of the inputs and outputs.
  *
@@ -288,7 +296,7 @@ gst_myfilter_chain(GstPad *pad, GstObject *parent, GstBuffer *buf)
       g_print("Send SEI()\n");
       JustCaughtDelimiter = FALSE;
 
-      guint8  sei_index  = 0, sei_data_size = 8;
+      guint8  sei_index  = 0, sei_data_size = 8, i =0;;
       guint16 gbuffer_size = 4 + 3 + 16 + sei_data_size + 1;
 
       // Add the NAL unit header to the SEI message
@@ -307,11 +315,17 @@ gst_myfilter_chain(GstPad *pad, GstObject *parent, GstBuffer *buf)
 
       sei_index = 7;
       // Copy uuid,
+      for(i = 0; i< MYFILTER_SEI_UUID_SIZE; i++){
+        map.data[sei_index++] = uuid[i];
+      }
 
       // Copy data;
+      for(i = 0; i< sei_data_size; i++){
+        map.data[sei_index++] = i;
+      }
 
       // End byte is 0x80;
-      map.data[gbuffer_size - 1] = 0x80;
+      map.data[gbuffer_size - 1] = MYFILTER_SEI_TRAILING_BYTE;
 
       // Unmap the buffer
       gst_buffer_unmap(sei_buf, &map);
