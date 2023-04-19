@@ -80,6 +80,8 @@ enum
   PROP_SILENT
 };
 
+static gboolean JustCaughtDelimiter = FALSE;
+
 /* the capabilities of the inputs and outputs.
  *
  * describe the real formats here.
@@ -242,7 +244,7 @@ gst_myfilter_chain(GstPad *pad, GstObject *parent, GstBuffer *buf)
   GstMapInfo info;
   guint8 *data;
   guint size;
-  guint16 i = 0;
+  // guint16 i = 0;
 
   filter = GST_MYFILTER(parent);
 
@@ -250,15 +252,15 @@ gst_myfilter_chain(GstPad *pad, GstObject *parent, GstBuffer *buf)
   data = info.data;
   size = info.size;
 
-  g_print("data size:%d\n", size);
+  // g_print("data size:%d\n", size);
 
-  g_print("data: %02X  %02X %02X %02X %02X %02X\n",
-    data[0],
-    data[1],
-    data[2],
-    data[3],
-    data[4],
-    data[5]);
+  // g_print("data: %02X %02X %02X %02X %02X %02X\n",
+  //         data[0],
+  //         data[1],
+  //         data[2],
+  //         data[3],
+  //         data[4],
+  //         data[5]);
 
   // if (filter->silent == FALSE)
   //   g_print ("I'm plugged, therefore I'm in.\n");
@@ -273,8 +275,44 @@ gst_myfilter_chain(GstPad *pad, GstObject *parent, GstBuffer *buf)
   // {
   //   g_print("Unknown format\n");
   // }
+  if (size >= 5 &&
+      data[0] == 0x00 &&
+      data[1] == 0x00 &&
+      data[2] == 0x00 &&
+      data[3] == 0x01)
+  {
+    if (JustCaughtDelimiter == TRUE &&
+        data[4] == MYFILTER_NALU_SPS)
+    {
+      // Send SEI message out
+      g_print("Send SEI()\n");
+      JustCaughtDelimiter = FALSE;
 
-  
+      // Add the NAL unit header to the SEI message
+      GstBuffer *sei_buf = gst_buffer_new_and_alloc(MYFILTER_SEI_MSG_SIZE);
+      GstMapInfo map;
+      
+      gst_buffer_map(sei_buf, &map, GST_MAP_WRITE);
+      map.data[0] = 0x66; // NAL unit type for SEI message
+      map.data[1] = 0x01; // SEI message payload type
+      map.data[2] = 0x80; // SEI message payload size
+
+
+      // Unmap the buffer
+      gst_buffer_unmap(sei_buf, &map);
+
+      // Push the SEI message downstream
+      gst_pad_push(filter->srcpad, sei_buf);
+    }
+    else if (data[4] == MYFILTER_NALU_DELIMIT)
+    {
+      JustCaughtDelimiter = TRUE;
+    }
+    else
+    {
+      JustCaughtDelimiter = FALSE;
+    }
+  }
 
   /* just push out the incoming buffer without touching it */
   return gst_pad_push(filter->srcpad, buf);

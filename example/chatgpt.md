@@ -34,6 +34,10 @@ static GstFlowReturn my_sink_chain(GstPad *pad, GstObject *parent, GstBuffer *bu
 }
 ```
 
+Q: How to check for keyframes?
+A: 
+
+
 ## add a SEI message into 
 In this example, we first check if the buffer contains a H.264 NAL unit and handle it as before. Then, we check if we need to insert a SEI message using the need_to_insert_sei_message() function.
 

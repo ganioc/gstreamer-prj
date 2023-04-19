@@ -49,6 +49,13 @@
 
 #include <gst/gst.h>
 
+#define MYFILTER_NALU_SPS       0x67
+#define MYFILTER_NALU_PPS       0x68
+#define MYFILTER_NALU_DELIMIT   0x09
+#define MYFILTER_NALU_SEI       0x66
+
+#defien MYFILTER_SEI_MSG_SIZE   32
+
 G_BEGIN_DECLS
 
 #define GST_TYPE_MYFILTER (gst_myfilter_get_type())
