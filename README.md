@@ -57,10 +57,14 @@ the source/header files for a new plugin.
 
 To create sources for `myfilter` based on the `gsttransform` template run:
 
+
 ``` shell
 cd src;
 ../tools/make_element myfilter gsttransform
 ```
+
+Another possible template would be gstplugin? By default **gstplugin** will be used.
+
 
 This will create `gstmyfilter.c` and `gstmyfilter.h`. Open them in an editor and
 start editing. There are several occurances of the string `template`, update

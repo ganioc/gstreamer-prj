@@ -1,7 +1,31 @@
 /*
  * GStreamer
- * Copyright (C) 2006 Stefan Kost <ensonic@users.sf.net>
+ * Copyright (C) 2005 Thomas Vander Stichele <thomas@apestaart.org>
+ * Copyright (C) 2005 Ronald S. Bultje <rbultje@ronald.bitfreak.net>
  * Copyright (C) 2023  <<user@hostname.org>>
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *
+ * Alternatively, the contents of this file may be used under the
+ * GNU Lesser General Public License Version 2.1 (the "LGPL"), in
+ * which case the following provisions apply instead of the ones
+ * mentioned above:
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -33,12 +57,10 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#  include <config.h>
 #endif
 
 #include <gst/gst.h>
-#include <gst/base/base.h>
-#include <gst/controller/controller.h>
 
 #include "gstmyfilter.h"
 
@@ -55,27 +77,28 @@ enum
 enum
 {
   PROP_0,
-  PROP_SILENT,
+  PROP_SILENT
 };
 
 /* the capabilities of the inputs and outputs.
  *
- * FIXME:describe the real formats here.
+ * describe the real formats here.
  */
-static GstStaticPadTemplate sink_template = GST_STATIC_PAD_TEMPLATE ("sink",
+static GstStaticPadTemplate sink_factory = GST_STATIC_PAD_TEMPLATE ("sink",
     GST_PAD_SINK,
     GST_PAD_ALWAYS,
     GST_STATIC_CAPS ("ANY")
     );
 
-static GstStaticPadTemplate src_template = GST_STATIC_PAD_TEMPLATE ("src",
+static GstStaticPadTemplate src_factory = GST_STATIC_PAD_TEMPLATE ("src",
     GST_PAD_SRC,
     GST_PAD_ALWAYS,
     GST_STATIC_CAPS ("ANY")
     );
 
 #define gst_myfilter_parent_class parent_class
-G_DEFINE_TYPE (Gstmyfilter, gst_myfilter, GST_TYPE_BASE_TRANSFORM);
+G_DEFINE_TYPE (Gstmyfilter, gst_myfilter, GST_TYPE_ELEMENT);
+
 GST_ELEMENT_REGISTER_DEFINE (myfilter, "myfilter", GST_RANK_NONE,
     GST_TYPE_MYFILTER);
 
@@ -84,8 +107,10 @@ static void gst_myfilter_set_property (GObject * object,
 static void gst_myfilter_get_property (GObject * object,
     guint prop_id, GValue * value, GParamSpec * pspec);
 
-static GstFlowReturn gst_myfilter_transform_ip (GstBaseTransform *
-    base, GstBuffer * outbuf);
+static gboolean gst_myfilter_sink_event (GstPad * pad,
+    GstObject * parent, GstEvent * event);
+static GstFlowReturn gst_myfilter_chain (GstPad * pad,
+    GstObject * parent, GstBuffer * buf);
 
 /* GObject vmethod implementations */
 
@@ -104,35 +129,39 @@ gst_myfilter_class_init (GstmyfilterClass * klass)
 
   g_object_class_install_property (gobject_class, PROP_SILENT,
       g_param_spec_boolean ("silent", "Silent", "Produce verbose output ?",
-          FALSE, G_PARAM_READWRITE | GST_PARAM_CONTROLLABLE));
+          FALSE, G_PARAM_READWRITE));
 
   gst_element_class_set_details_simple (gstelement_class,
       "myfilter",
-      "Generic/Filter",
-      "FIXME:Generic Template Filter", " <<user@hostname.org>>");
+      "FIXME:Generic",
+      "FIXME:Generic Template Element", " <<user@hostname.org>>");
 
   gst_element_class_add_pad_template (gstelement_class,
-      gst_static_pad_template_get (&src_template));
+      gst_static_pad_template_get (&src_factory));
   gst_element_class_add_pad_template (gstelement_class,
-      gst_static_pad_template_get (&sink_template));
-
-  GST_BASE_TRANSFORM_CLASS (klass)->transform_ip =
-      GST_DEBUG_FUNCPTR (gst_myfilter_transform_ip);
-
-  /* debug category for fltering log messages
-   *
-   * FIXME:exchange the string 'Template myfilter' with your description
-   */
-  GST_DEBUG_CATEGORY_INIT (gst_myfilter_debug, "myfilter", 0,
-      "Template myfilter");
+      gst_static_pad_template_get (&sink_factory));
 }
 
 /* initialize the new element
+ * instantiate pads and add them to element
+ * set pad callback functions
  * initialize instance structure
  */
 static void
 gst_myfilter_init (Gstmyfilter * filter)
 {
+  filter->sinkpad = gst_pad_new_from_static_template (&sink_factory, "sink");
+  gst_pad_set_event_function (filter->sinkpad,
+      GST_DEBUG_FUNCPTR (gst_myfilter_sink_event));
+  gst_pad_set_chain_function (filter->sinkpad,
+      GST_DEBUG_FUNCPTR (gst_myfilter_chain));
+  GST_PAD_SET_PROXY_CAPS (filter->sinkpad);
+  gst_element_add_pad (GST_ELEMENT (filter), filter->sinkpad);
+
+  filter->srcpad = gst_pad_new_from_static_template (&src_factory, "src");
+  GST_PAD_SET_PROXY_CAPS (filter->srcpad);
+  gst_element_add_pad (GST_ELEMENT (filter), filter->srcpad);
+
   filter->silent = FALSE;
 }
 
@@ -168,25 +197,55 @@ gst_myfilter_get_property (GObject * object, guint prop_id,
   }
 }
 
-/* GstBaseTransform vmethod implementations */
+/* GstElement vmethod implementations */
 
-/* this function does the actual processing
+/* this function handles sink events */
+static gboolean
+gst_myfilter_sink_event (GstPad * pad, GstObject * parent,
+    GstEvent * event)
+{
+  Gstmyfilter *filter;
+  gboolean ret;
+
+  filter = GST_MYFILTER (parent);
+
+  GST_LOG_OBJECT (filter, "Received %s event: %" GST_PTR_FORMAT,
+      GST_EVENT_TYPE_NAME (event), event);
+
+  switch (GST_EVENT_TYPE (event)) {
+    case GST_EVENT_CAPS:
+    {
+      GstCaps *caps;
+
+      gst_event_parse_caps (event, &caps);
+      /* do something with the caps */
+
+      /* and forward */
+      ret = gst_pad_event_default (pad, parent, event);
+      break;
+    }
+    default:
+      ret = gst_pad_event_default (pad, parent, event);
+      break;
+  }
+  return ret;
+}
+
+/* chain function
+ * this function does the actual processing
  */
 static GstFlowReturn
-gst_myfilter_transform_ip (GstBaseTransform * base, GstBuffer * outbuf)
+gst_myfilter_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
 {
-  Gstmyfilter *filter = GST_MYFILTER (base);
+  Gstmyfilter *filter;
 
-  if (GST_CLOCK_TIME_IS_VALID (GST_BUFFER_TIMESTAMP (outbuf)))
-    gst_object_sync_values (GST_OBJECT (filter), GST_BUFFER_TIMESTAMP (outbuf));
+  filter = GST_MYFILTER (parent);
 
   if (filter->silent == FALSE)
     g_print ("I'm plugged, therefore I'm in.\n");
 
-  /* FIXME: do something interesting here.  This simply copies the source
-   * to the destination. */
-
-  return GST_FLOW_OK;
+  /* just push out the incoming buffer without touching it */
+  return gst_pad_push (filter->srcpad, buf);
 }
 
 
@@ -197,12 +256,28 @@ gst_myfilter_transform_ip (GstBaseTransform * base, GstBuffer * outbuf)
 static gboolean
 myfilter_init (GstPlugin * myfilter)
 {
+  /* debug category for filtering log messages
+   *
+   * exchange the string 'Template myfilter' with your description
+   */
+  GST_DEBUG_CATEGORY_INIT (gst_myfilter_debug, "myfilter",
+      0, "Template myfilter");
+
   return GST_ELEMENT_REGISTER (myfilter, myfilter);
 }
 
+/* PACKAGE: this is usually set by meson depending on some _INIT macro
+ * in meson.build and then written into and defined in config.h, but we can
+ * just set it ourselves here in case someone doesn't use meson to
+ * compile this code. GST_PLUGIN_DEFINE needs PACKAGE to be defined.
+ */
+#ifndef PACKAGE
+#define PACKAGE "myfirstmyfilter"
+#endif
+
 /* gstreamer looks for this structure to register myfilters
  *
- * FIXME:exchange the string 'Template myfilter' with you myfilter description
+ * exchange the string 'Template myfilter' with your myfilter description
  */
 GST_PLUGIN_DEFINE (GST_VERSION_MAJOR,
     GST_VERSION_MINOR,

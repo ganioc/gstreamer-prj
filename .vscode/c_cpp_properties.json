@@ -4,6 +4,7 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/*",
+                "${workspaceFolder}/gst-plugin/src",
                 "/Library/Frameworks/GStreamer.framework/Headers/*",
                 "/Library/Frameworks/GStreamer.framework/Headers/"
             ],
