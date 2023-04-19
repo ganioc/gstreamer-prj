@@ -92,6 +92,17 @@ static GstFlowReturn my_sink_chain(GstPad *pad, GstObject *parent, GstBuffer *bu
 }
 ```
 
+Q: 如何生成一个SEI Message呢？
+A: 还需要有padding, 32bit, 也就是4字节的倍数,
+
+SEI message payload type,
+
+SEI message payload size,
+
+SEI message payload end byte,
+
+
+
 ## 暴露set_property,这样应用就可以对参数进行设置了
 In this example, we create a pipeline and a plugin using gst_pipeline_new() and gst_element_factory_make(). We then set the property of the plugin using the set_plugin_property() function, which uses g_object_set() to set the property value.
 

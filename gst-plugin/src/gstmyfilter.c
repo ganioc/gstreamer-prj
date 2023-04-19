@@ -288,15 +288,30 @@ gst_myfilter_chain(GstPad *pad, GstObject *parent, GstBuffer *buf)
       g_print("Send SEI()\n");
       JustCaughtDelimiter = FALSE;
 
+      guint8  sei_index  = 0, sei_data_size = 8;
+      guint16 gbuffer_size = 4 + 3 + 16 + sei_data_size + 1;
+
       // Add the NAL unit header to the SEI message
-      GstBuffer *sei_buf = gst_buffer_new_and_alloc(MYFILTER_SEI_MSG_SIZE);
+      GstBuffer *sei_buf = gst_buffer_new_and_alloc(gbuffer_size);
       GstMapInfo map;
       
-      gst_buffer_map(sei_buf, &map, GST_MAP_WRITE);
-      map.data[0] = 0x66; // NAL unit type for SEI message
-      map.data[1] = 0x01; // SEI message payload type
-      map.data[2] = 0x80; // SEI message payload size
 
+      gst_buffer_map(sei_buf, &map, GST_MAP_WRITE);
+      map.data[0] = 0x00;
+      map.data[1] = 0x00;
+      map.data[2] = 0x00;
+      map.data[3] = 0x01;
+      map.data[4] = MYFILTER_SEI_NALU_TYPE; // NAL unit type for SEI message
+      map.data[5] = MYFILTER_SEI_PAYLOAD_TYPE; // SEI message payload type
+      map.data[6] = 16 + sei_data_size; // SEI message payload size
+
+      sei_index = 7;
+      // Copy uuid,
+
+      // Copy data;
+
+      // End byte is 0x80;
+      map.data[gbuffer_size - 1] = 0x80;
 
       // Unmap the buffer
       gst_buffer_unmap(sei_buf, &map);
