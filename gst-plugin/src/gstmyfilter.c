@@ -83,12 +83,11 @@ enum
 static gboolean JustCaughtDelimiter = FALSE;
 // 086f3693-b7b3-4f2c-9653-21492feee5b8
 static guint8 uuid[MYFILTER_SEI_UUID_SIZE] = {
-  0x08, 0x6f, 0x36, 0x93,
-  0xb7, 0xb3,
-  0x4f, 0x2c,
-  0x96, 0x53,
-  0x21, 0x49, 0x2f, 0xee, 0xe5, 0xb8
-};
+    0x08, 0x6f, 0x36, 0x93,
+    0xb7, 0xb3,
+    0x4f, 0x2c,
+    0x96, 0x53,
+    0x21, 0x49, 0x2f, 0xee, 0xe5, 0xb8};
 
 /* the capabilities of the inputs and outputs.
  *
@@ -142,7 +141,8 @@ gst_myfilter_class_init(GstmyfilterClass *klass)
   gst_element_class_set_details_simple(gstelement_class,
                                        "myfilter",
                                        "FIXME:Generic",
-                                       "FIXME:Generic Template Element", " <<user@hostname.org>>");
+                                       "FIXME:Generic Template Element", 
+                                       " <<user@hostname.org>>");
 
   gst_element_class_add_pad_template(gstelement_class,
                                      gst_static_pad_template_get(&src_factory));
@@ -296,31 +296,33 @@ gst_myfilter_chain(GstPad *pad, GstObject *parent, GstBuffer *buf)
       g_print("Send SEI()\n");
       JustCaughtDelimiter = FALSE;
 
-      guint8  sei_index  = 0, sei_data_size = 8, i =0;;
+      guint8 sei_index = 0, sei_data_size = 8, i = 0;
+      ;
       guint16 gbuffer_size = 4 + 3 + 16 + sei_data_size + 1;
 
       // Add the NAL unit header to the SEI message
       GstBuffer *sei_buf = gst_buffer_new_and_alloc(gbuffer_size);
       GstMapInfo map;
-      
 
       gst_buffer_map(sei_buf, &map, GST_MAP_WRITE);
       map.data[0] = 0x00;
       map.data[1] = 0x00;
       map.data[2] = 0x00;
       map.data[3] = 0x01;
-      map.data[4] = MYFILTER_SEI_NALU_TYPE; // NAL unit type for SEI message
+      map.data[4] = MYFILTER_SEI_NALU_TYPE;    // NAL unit type for SEI message
       map.data[5] = MYFILTER_SEI_PAYLOAD_TYPE; // SEI message payload type
-      map.data[6] = 16 + sei_data_size; // SEI message payload size
+      map.data[6] = 16 + sei_data_size;        // SEI message payload size
 
       sei_index = 7;
       // Copy uuid,
-      for(i = 0; i< MYFILTER_SEI_UUID_SIZE; i++){
+      for (i = 0; i < MYFILTER_SEI_UUID_SIZE; i++)
+      {
         map.data[sei_index++] = uuid[i];
       }
 
       // Copy data;
-      for(i = 0; i< sei_data_size; i++){
+      for (i = 0; i < sei_data_size; i++)
+      {
         map.data[sei_index++] = i;
       }
 
