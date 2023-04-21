@@ -43,8 +43,6 @@ int run_pipeline(int argc, char *argv[], void *args)
         g_print("create source fail\n");
         return -1;
     }
-
-
     g_print("create x264enc\n");
     data.xenc = gst_element_factory_make("x264enc", "x264enc");
     data.xenccaps = gst_caps_new_simple("video/x-h264", 
@@ -64,23 +62,16 @@ int run_pipeline(int argc, char *argv[], void *args)
     g_print("create sink\n");
     data.sink = gst_element_factory_make("autovideosink", "sink");
 
-
-    // create capsfilter h264-filter
-    g_print("set caps\n");
-    g_object_set(data.xenc, "caps", data.xenccaps, NULL);
-    g_object_set(data.h264parse, "caps", data.parsecaps, NULL);
-
-
-
+    g_print("judge if everything created OK\n");
 
     if (!data.pipeline || 
         !data.source || 
-        data.xenc ||
-        data.xenccaps ||
-        data.h264parse ||
-        data.parsecaps ||
-        data.queue ||
-        data.avdec ||
+        !data.xenc ||
+        !data.xenccaps ||
+        !data.h264parse ||
+        !data.parsecaps ||
+        !data.queue ||
+        !data.avdec ||
         !data.sink)
     {
         g_printerr("Not all elements could be created.\n");
@@ -88,6 +79,7 @@ int run_pipeline(int argc, char *argv[], void *args)
     }
 
     /* Build the pipeline */
+    g_print("build the pipeline\n");
     gst_bin_add_many(GST_BIN(data.pipeline), 
         data.source, 
         data.xenc,
@@ -95,12 +87,14 @@ int run_pipeline(int argc, char *argv[], void *args)
         data.queue,
         data.avdec,
         data.sink, NULL);
-    if (gst_element_link_many(data.source, 
+
+    g_print("link many\n");
+    if (!gst_element_link_many(data.source, 
         data.xenc,
         data.h264parse,
         data.queue,
         data.avdec,
-        data.sink, NULL) != TRUE)
+        data.sink, NULL))
     {
         g_printerr("Elements could not be linked.\n");
         gst_object_unref(data.pipeline);
@@ -108,11 +102,15 @@ int run_pipeline(int argc, char *argv[], void *args)
     }
 
     // "device-index", 1, 
+    g_print("set source device-index 1\n");
     g_object_set(G_OBJECT(data.source), "device-index", 1, NULL);
-    g_object_set(
-        G_OBJECT(data.sink),
-        "sync", FALSE,
-        NULL);
+    g_print("set sink sync FALSE\n");
+    g_object_set(G_OBJECT(data.sink), "sync", FALSE, NULL);
+    
+    // create capsfilter h264-filter
+    g_print("set caps\n");
+    g_object_set(data.xenc, "caps", data.xenccaps, NULL);
+    g_object_set(data.h264parse, "caps", data.parsecaps, NULL);
 
     /* Start playing */
     ret = gst_element_set_state(data.pipeline, GST_STATE_PLAYING);
