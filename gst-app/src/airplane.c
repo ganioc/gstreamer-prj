@@ -103,7 +103,7 @@ int run_pipeline(int argc, char *argv[], void *args)
             gst_message_parse_error(msg, &err, &debug_info);
             g_printerr("Error received from element %s: %s\n",
                        GST_OBJECT_NAME(msg->src), err->message);
-            g_printerr("Debugging information: %s\n",
+            g_printerr("Debugging info: %s\n",
                        debug_info ? debug_info : "none");
             g_clear_error(&err);
             g_free(debug_info);
@@ -120,10 +120,12 @@ int run_pipeline(int argc, char *argv[], void *args)
     }
 
     /* Free resources */
+    g_print("Release resources\n");
     gst_object_unref(bus);
     gst_element_set_state(pipeline, GST_STATE_NULL);
     gst_object_unref(pipeline);
 
+    g_print("exit\n");
     return 0;
 }
 int main(int argc, char *argv[])
@@ -145,12 +147,7 @@ int main(int argc, char *argv[])
 
     g_print("Create the GStreamer 1.0 pipeline ...\n");
 
-    // if (run_pipeline(argc, argv) != 0)
-    // {
-    //     g_print("run_pipeline() errors\n");
-    //     return -1;
-    // }
-
+    // For it to run on macos
     #if defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE
         return gst_macos_main (run_pipeline, argc, argv, NULL);
     #else
