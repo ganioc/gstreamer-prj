@@ -2,6 +2,8 @@
 
 extern Params params;
 
+CustomData data;
+
 int demo(){
     g_print("Only demo\n");
 
@@ -17,7 +19,7 @@ void print_params(Params *param){
 
 int run_pipeline(int argc, char *argv[], void *args)
 {
-    GstElement *pipeline, *source, *sink;
+    // GstElement *pipeline, *source, *sink;
     GstBus *bus;
     GstMessage *msg;
     GstStateChangeReturn ret;
@@ -30,38 +32,38 @@ int run_pipeline(int argc, char *argv[], void *args)
     print_params(&params);
 
     /* Create the elements */
-    source = gst_element_factory_make("videotestsrc", "source");
-    sink = gst_element_factory_make("autovideosink", "sink");
+    data.source = gst_element_factory_make("videotestsrc", "source");
+    data.sink = gst_element_factory_make("autovideosink", "sink");
 
     /* Create the empty pipeline */
-    pipeline = gst_pipeline_new("pipeline");
+    data.pipeline = gst_pipeline_new("pipeline");
 
-    if (!pipeline || !source || !sink)
+    if (!data.pipeline || !data.source || !data.sink)
     {
         g_printerr("Not all elements could be created.\n");
         return -1;
     }
 
     /* Build the pipeline */
-    gst_bin_add_many(GST_BIN(pipeline), source, sink, NULL);
-    if (gst_element_link(source, sink) != TRUE)
+    gst_bin_add_many(GST_BIN(data.pipeline), data.source, data.sink, NULL);
+    if (gst_element_link(data.source, data.sink) != TRUE)
     {
         g_printerr("Elements could not be linked.\n");
-        gst_object_unref(pipeline);
+        gst_object_unref(data.pipeline);
         return -1;
     }
 
     /* Start playing */
-    ret = gst_element_set_state(pipeline, GST_STATE_PLAYING);
+    ret = gst_element_set_state(data.pipeline, GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE)
     {
         g_printerr("Unable to set the pipeline to the playing state.\n");
-        gst_object_unref(pipeline);
+        gst_object_unref(data.pipeline);
         return -1;
     }
 
     /* Wait until error or EOS */
-    bus = gst_element_get_bus(pipeline);
+    bus = gst_element_get_bus(data.pipeline);
 
 
     msg =
@@ -100,8 +102,8 @@ int run_pipeline(int argc, char *argv[], void *args)
     /* Free resources */
     g_print("Release resources\n");
     gst_object_unref(bus);
-    gst_element_set_state(pipeline, GST_STATE_NULL);
-    gst_object_unref(pipeline);
+    gst_element_set_state(data.pipeline, GST_STATE_NULL);
+    gst_object_unref(data.pipeline);
 
     g_print("exit\n");
     return 0;

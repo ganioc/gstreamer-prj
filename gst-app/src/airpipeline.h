@@ -12,6 +12,14 @@ typedef struct _Params
     gboolean version;
 } Params;
 
+typedef struct _CustomData {
+    GstElement *pipeline;
+    GstElement *source;
+    GstElement *convert;
+    GstElement *resample;
+    GstElement *sink;
+} CustomData;
+
 int demo(void);
 int run_pipeline(int argc, char *argv[], void *args);
 
