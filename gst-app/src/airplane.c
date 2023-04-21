@@ -1,18 +1,11 @@
-#include "gst-app.h"
-
+/**
+ * This is the main entry file of airplane
+*/
 #include "airpipeline.h"
 
 #ifdef __APPLE__
 #include <TargetConditionals.h>
 #endif
-
-typedef struct _Params
-{
-    gchar host[128];
-    guint port;
-    gchar video[24];
-    gboolean version;
-} Params;
 
 Params params = {
     .host = "127.0.0.1",
@@ -72,6 +65,4 @@ int main(int argc, char *argv[])
     #else
         return run_pipeline (argc, argv);
     #endif
-
-    return 0;
 }

@@ -1,9 +1,18 @@
 #include "airpipeline.h"
 
+extern Params params;
+
 int demo(){
     g_print("Only demo\n");
 
     return 0;
+}
+void print_params(Params *param){
+    g_print("------- params -------\n");
+    g_print("host: %s\n", param->host);
+    g_print("port: %d\n", param->port);
+    g_print("video format: %s\n", param->video);
+    g_print("----------------------\n");
 }
 
 int run_pipeline(int argc, char *argv[], void *args)
@@ -18,6 +27,7 @@ int run_pipeline(int argc, char *argv[], void *args)
 
     // demo();
     g_print("run pipeline()\n");
+    print_params(&params);
 
     /* Create the elements */
     source = gst_element_factory_make("videotestsrc", "source");
