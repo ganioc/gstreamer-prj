@@ -15,8 +15,12 @@ typedef struct _Params
 typedef struct _CustomData {
     GstElement *pipeline;
     GstElement *source;
-    GstElement *convert;
-    GstElement *resample;
+    GstElement *xenc;
+    GstCaps *xenccaps;
+    GstElement *h264parse;
+    GstCaps *parsecaps;
+    GstElement *queue;
+    GstElement *avdec;
     GstElement *sink;
 } CustomData;
 

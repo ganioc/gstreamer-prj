@@ -31,27 +31,88 @@ int run_pipeline(int argc, char *argv[], void *args)
     g_print("run pipeline()\n");
     print_params(&params);
 
-    /* Create the elements */
-    data.source = gst_element_factory_make("videotestsrc", "source");
-    data.sink = gst_element_factory_make("autovideosink", "sink");
 
     /* Create the empty pipeline */
+    g_print("create pipeline\n");
     data.pipeline = gst_pipeline_new("pipeline");
 
-    if (!data.pipeline || !data.source || !data.sink)
+    /* Create the elements */
+    g_print("create source\n");
+    data.source = gst_element_factory_make("avfvideosrc", "source");
+    if(!data.source){
+        g_print("create source fail\n");
+        return -1;
+    }
+
+
+    g_print("create x264enc\n");
+    data.xenc = gst_element_factory_make("x264enc", "x264enc");
+    data.xenccaps = gst_caps_new_simple("video/x-h264", 
+        "stream-format", G_TYPE_STRING, "byte-stream",
+        NULL);
+
+    g_print("create h264parse\n");
+    data.h264parse = gst_element_factory_make("h264parse","h264parse");
+    data.parsecaps = gst_caps_new_simple("video/x-h264", 
+        "stream-format", G_TYPE_STRING, "byte-stream",
+        "alignment", G_TYPE_STRING, "nal",
+        NULL);
+    g_print("create queue\n");
+    data.queue = gst_element_factory_make("queue", "queue");
+    g_print("create avdec\n");
+    data.avdec = gst_element_factory_make("avdec_h264", "avdec");
+    g_print("create sink\n");
+    data.sink = gst_element_factory_make("autovideosink", "sink");
+
+
+    // create capsfilter h264-filter
+    g_print("set caps\n");
+    g_object_set(data.xenc, "caps", data.xenccaps, NULL);
+    g_object_set(data.h264parse, "caps", data.parsecaps, NULL);
+
+
+
+
+    if (!data.pipeline || 
+        !data.source || 
+        data.xenc ||
+        data.xenccaps ||
+        data.h264parse ||
+        data.parsecaps ||
+        data.queue ||
+        data.avdec ||
+        !data.sink)
     {
         g_printerr("Not all elements could be created.\n");
         return -1;
     }
 
     /* Build the pipeline */
-    gst_bin_add_many(GST_BIN(data.pipeline), data.source, data.sink, NULL);
-    if (gst_element_link(data.source, data.sink) != TRUE)
+    gst_bin_add_many(GST_BIN(data.pipeline), 
+        data.source, 
+        data.xenc,
+        data.h264parse,
+        data.queue,
+        data.avdec,
+        data.sink, NULL);
+    if (gst_element_link_many(data.source, 
+        data.xenc,
+        data.h264parse,
+        data.queue,
+        data.avdec,
+        data.sink, NULL) != TRUE)
     {
         g_printerr("Elements could not be linked.\n");
         gst_object_unref(data.pipeline);
         return -1;
     }
+
+    // "device-index", 1, 
+    g_object_set(G_OBJECT(data.source), "device-index", 1, NULL);
+    g_object_set(
+        G_OBJECT(data.sink),
+        "sync", FALSE,
+        NULL);
 
     /* Start playing */
     ret = gst_element_set_state(data.pipeline, GST_STATE_PLAYING);
@@ -64,7 +125,6 @@ int run_pipeline(int argc, char *argv[], void *args)
 
     /* Wait until error or EOS */
     bus = gst_element_get_bus(data.pipeline);
-
 
     msg =
         gst_bus_timed_pop_filtered(bus, 
@@ -104,6 +164,15 @@ int run_pipeline(int argc, char *argv[], void *args)
     gst_object_unref(bus);
     gst_element_set_state(data.pipeline, GST_STATE_NULL);
     gst_object_unref(data.pipeline);
+    gst_caps_unref(data.xenccaps);
+    gst_caps_unref(data.parsecaps);
+
+    gst_object_unref(data.source);
+    gst_object_unref(data.xenc);
+    gst_object_unref(data.h264parse);
+    gst_object_unref(data.queue);
+    gst_object_unref(data.avdec);
+    gst_object_unref(data.sink);
 
     g_print("exit\n");
     return 0;
