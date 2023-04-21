@@ -4,7 +4,8 @@ app_sources = [
   ]
 
 airplane_sources = [
-  'src/airplane.c'
+  'src/airplane.c',
+  'src/airpipeline.c'
 ]
 
 executable('gst-app', app_sources, dependencies : [gst_dep])
