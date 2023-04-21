@@ -23,6 +23,7 @@ int run_pipeline(int argc, char *argv[], void *args)
     GstBus *bus;
     GstMessage *msg;
     GstStateChangeReturn ret;
+    GstElement *local_source;
 
     /* Initialize GStreamer */
     gst_init(&argc, &argv);
@@ -38,11 +39,8 @@ int run_pipeline(int argc, char *argv[], void *args)
 
     /* Create the elements */
     g_print("create source\n");
-    data.source = gst_element_factory_make("avfvideosrc", "source");
-    if(!data.source){
-        g_print("create source fail\n");
-        return -1;
-    }
+    local_source = gst_element_factory_make("avfvideosrc", "source");
+
     g_print("create x264enc\n");
     data.xenc = gst_element_factory_make("x264enc", "x264enc");
     data.xenccaps = gst_caps_new_simple("video/x-h264", 
@@ -65,7 +63,7 @@ int run_pipeline(int argc, char *argv[], void *args)
     g_print("judge if everything created OK\n");
 
     if (!data.pipeline || 
-        !data.source || 
+        !local_source || 
         !data.xenc ||
         !data.xenccaps ||
         !data.h264parse ||
@@ -81,7 +79,7 @@ int run_pipeline(int argc, char *argv[], void *args)
     /* Build the pipeline */
     g_print("build the pipeline\n");
     gst_bin_add_many(GST_BIN(data.pipeline), 
-        data.source, 
+        local_source, 
         data.xenc,
         data.h264parse,
         data.queue,
@@ -89,7 +87,7 @@ int run_pipeline(int argc, char *argv[], void *args)
         data.sink, NULL);
 
     g_print("link many\n");
-    if (!gst_element_link_many(data.source, 
+    if (!gst_element_link_many(local_source, 
         data.xenc,
         data.h264parse,
         data.queue,
@@ -103,7 +101,9 @@ int run_pipeline(int argc, char *argv[], void *args)
 
     // "device-index", 1, 
     g_print("set source device-index 1\n");
-    g_object_set(G_OBJECT(data.source), "device-index", 1, NULL);
+    // GstPad* sink_0 = gst_element_get_static_pad(local_source, "sink_0");
+    // g_object_set(sink_0, "device-index",1 , NULL);
+    g_object_set(G_OBJECT(local_source), "device-index", 1, NULL);
     g_print("set sink sync FALSE\n");
     g_object_set(G_OBJECT(data.sink), "sync", FALSE, NULL);
     
