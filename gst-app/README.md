@@ -38,3 +38,10 @@ video -   [h.264 | h.265], video format supported, default is h.264
 format -  [gps | custom], data format got from host:port, default is gps
 
 maxlen -  [uint], max length of the data, maximum data length from host:port, it will be cut to less than the len, default is 32
+
+## Linux version
+Gstreamer pipeline command
+
+```shell
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480  ! videoconvert ! x264enc !  video/x-h264,stream-format=byte-stream  !  h264parse ! video/x-h264,stream-format=byte-stream,alignment=nal  !  avdec_h264  ! videoconvert !  autovideosink
+```

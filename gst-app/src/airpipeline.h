@@ -23,6 +23,20 @@ typedef struct _CustomData {
     GstElement *avdec;
     GstElement *sink;
 } CustomData;
+typedef struct _LinuxData{
+    GstElement *pipeline;
+    GstElement *source;
+    GstElement *capssource;
+    GstElement *convert;
+    GstElement *enc;
+    GstElement *capsenc;
+    GstElement *parse;
+    GstElement *cpasparse;
+    GstElement *avdec;
+    GstElement *convert2;
+    GstElement *sink;
+
+} LinuxData;
 
 int run_pipeline_macos(int argc, char *argv[], void *args);
 int run_pipeline_linux(int argc, char *argv[], void *args);
