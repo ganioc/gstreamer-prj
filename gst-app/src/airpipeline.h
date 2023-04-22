@@ -25,6 +25,6 @@ typedef struct _CustomData {
 } CustomData;
 
 int demo(void);
-int run_pipeline(int argc, char *argv[], void *args);
+int run_pipeline_macos(int argc, char *argv[], void *args);
 
 #endif

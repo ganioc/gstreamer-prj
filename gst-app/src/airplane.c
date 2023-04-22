@@ -62,7 +62,9 @@ int main(int argc, char *argv[])
     // For it to run on macos
     #if defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE
         return gst_macos_main (run_pipeline, argc, argv, NULL);
+    #elif defined(__linux__)
+        return run_pipeline_macos (argc, argv, NULL);
     #else
-        return run_pipeline (argc, argv, NULL);
+        g_print("Unknown OS type\n");
     #endif
 }

@@ -17,7 +17,7 @@ void print_params(Params *param){
     g_print("----------------------\n");
 }
 
-int run_pipeline(int argc, char *argv[], void *args)
+int run_pipeline_macos(int argc, char *argv[], void *args)
 {
     // GstElement *pipeline, *source, *sink;
     GstBus *bus;

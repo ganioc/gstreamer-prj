@@ -20,6 +20,10 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/*",
+                "${workspaceFolder}/gst-app/src",
+                "/usr/include/gstreamer-1.0",
+                "/usr/include/glib-2.0",
+                "/usr/lib/x86_64-linux-gnu/glib-2.0/include"
             ],
             "defines": [],
             "macFrameworkPath": [],
