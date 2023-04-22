@@ -63,6 +63,6 @@ int main(int argc, char *argv[])
     #if defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE
         return gst_macos_main (run_pipeline, argc, argv, NULL);
     #else
-        return run_pipeline (argc, argv);
+        return run_pipeline (argc, argv, NULL);
     #endif
 }
