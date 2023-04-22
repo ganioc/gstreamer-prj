@@ -24,7 +24,7 @@ typedef struct _CustomData {
     GstElement *sink;
 } CustomData;
 
-int demo(void);
 int run_pipeline_macos(int argc, char *argv[], void *args);
+int run_pipeline_linux(int argc, char *argv[], void *args);
 
 #endif
