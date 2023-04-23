@@ -2,7 +2,7 @@
 
 extern Params params;
 
-CustomData data;
+MacosData data;
 
 int demo(){
     g_print("Only demo\n");
@@ -29,7 +29,7 @@ int run_pipeline_macos(int argc, char *argv[], void *args)
     gst_init(&argc, &argv);
 
     // demo();
-    g_print("run pipeline()\n");
+    g_print("run macos pipeline()\n");
     print_params(&params);
 
 

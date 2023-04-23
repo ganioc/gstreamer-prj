@@ -12,7 +12,7 @@ typedef struct _Params
     gboolean version;
 } Params;
 
-typedef struct _CustomData {
+typedef struct _MacosData {
     GstElement *pipeline;
     GstElement *source;
     GstElement *xenc;
@@ -22,7 +22,7 @@ typedef struct _CustomData {
     GstElement *queue;
     GstElement *avdec;
     GstElement *sink;
-} CustomData;
+} MacosData;
 typedef struct _LinuxData{
     GstElement *pipeline;
     GstElement *source;
