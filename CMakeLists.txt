@@ -21,10 +21,10 @@ if ( NOT (GST_FOUND))
 endif()
 set(ENV{PKG_CONFIG_PATH})
 
-pkg_check_modules(GTK REQUIRED "gtk+-3.0")
-if (NOT (GTK_FOUND))
-    message(FATAL_ERROR "Please install GTK 3.0: CMake will Exit")
-endif()
+# pkg_check_modules(GTK REQUIRED "gtk+-3.0")
+# if (NOT (GTK_FOUND))
+#     message(FATAL_ERROR "Please install GTK 3.0: CMake will Exit")
+# endif()
 
 pkg_check_modules(GSTVIDEO REQUIRED gstreamer-video-1.0)
 if (NOT (GSTVIDEO_FOUND))
@@ -36,10 +36,10 @@ if (NOT (GSTAUDIO_FOUND))
     message(FATAL_ERROR "Please install gst-audio: CMake will Exit")
 endif()
 
-pkg_check_modules(GSTDIS REQUIRED gstreamer-pbutils-1.0)
-if (NOT (GSTDIS_FOUND))
-    message(FATAL_ERROR "Please install gst-pbutils: CMake will Exit")
-endif()
+# pkg_check_modules(GSTDIS REQUIRED gstreamer-pbutils-1.0)
+# if (NOT (GSTDIS_FOUND))
+#     message(FATAL_ERROR "Please install gst-pbutils: CMake will Exit")
+# endif()
 
 
 message(STATUS "include => ${GST_INCLUDE_DIRS}")
@@ -97,23 +97,23 @@ list(APPEND srcs src/time4.c
             src/basic3.c
             src/basic2.c
             src/basic1.c
-            src/gui5.c
+            # src/gui5.c
             src/padcap6.c
             src/thread7.c
             src/shortcutting8.c
             src/info9.c
-            src/demosrc.c
+            # src/demosrc.c
             )
 list(APPEND prjs time4
             tutorialthree
             tutorialtwo
             tutorialone
-            gui5
+            # gui5
             padcap6
             thread7
             shortcutting8
             info9
-            demosrc
+            # demosrc
             )
 foreach(file prj IN ZIP_LISTS srcs prjs)
     message(STATUS ${prj} " - " ${file})
