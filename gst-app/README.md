@@ -45,3 +45,6 @@ Gstreamer pipeline command
 ```shell
 gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480  ! videoconvert ! x264enc !  video/x-h264,stream-format=byte-stream  !  h264parse ! video/x-h264,stream-format=byte-stream,alignment=nal  !  avdec_h264  ! videoconvert !  autovideosink
 ```
+
+## Macos version
+Test can be done, but parameter can not be set.
